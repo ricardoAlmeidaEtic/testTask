@@ -5,13 +5,13 @@ import datetime
 import shutil
 import logging
 
-if not sys.argv[4]:
+if len(sys.argv) != 5:
     print("arguments are missing...")
     print("app closing...")
     sys.exit()
 
-source = sys.argv[1]
-replica = sys.argv[2]
+source=sys.argv[1]
+replica=sys.argv[2]
 timer=sys.argv[3]
 log=sys.argv[4]
 

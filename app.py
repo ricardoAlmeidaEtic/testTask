@@ -5,21 +5,40 @@ import datetime
 import shutil
 import logging
 
+if not sys.argv[4]:
+    print("arguments are missing...")
+    print("app closing...")
+    sys.exit()
+
 source = sys.argv[1]
 replica = sys.argv[2]
-timer=float(sys.argv[3])
+timer=sys.argv[3]
 log=sys.argv[4]
+
+try:
+    timer=float(timer)
+except ValueError:
+    print("timer arguments is incorrect, please insert a number...")
+    print("app closing...")
+    sys.exit()
+
 run = True
 logging.basicConfig(filename=log, encoding='utf-8', format='%(asctime)s | %(levelname)s | %(module)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
 #start-functions#
+
+def logAndPrint(content):
+    print("\n"+content)
+    logging.info(content)
 
 def checkDir(folder):
     if not os.path.exists(folder):
         try:
             os.makedirs(folder)
         except:
-            print("Error while creating folder: ", folder)
+            exception="Error while creating folder: " + folder
+            print(exception)
+            logging.warning(exception)
             
 
 def readFile(path):
@@ -27,21 +46,25 @@ def readFile(path):
         with open(path, 'rb') as rawdata:
             return rawdata.read()
     except:
-        print("Error while reading file: ", path)
+        exception = "Error while reading file: " + path
+        print(exception)
+        logging.warning(exception)
     
 def writeFile(file, operation):
     try:
         with open(os.path.join(replica,file), 'wb') as fileData:
             fileData.write(readFile(os.path.join(source,file)))
     except:
-        print("Error while writing file: ", os.path.join(replica,file))
+        exception = "Error while writing file: " + os.path.join(replica,file)
+        print(exception)
+        logging.warning(exception)
 
-    logging.info(f"File {operation} - Name: {file}, size: {os.stat(replica + file).st_size} bytes.")
+    logAndPrint(f"File {operation} - Name: {file}, size: {os.stat(replica + file).st_size} bytes.")
 
 def writeFolder(folder,operation):
     try:
         os.makedirs(os.path.join(replica,folder))
-        logging.info(f"Folder {operation} - Name: {folder}, size: {os.stat(replica + folder).st_size} bytes.")
+        logAndPrint(f"Folder {operation} - Name: {folder}, size: {os.stat(replica + folder).st_size} bytes.")
     except:
             print("Error while creating folder: ", os.path.join(replica,folder))
     
@@ -78,7 +101,7 @@ def syncFolder():
             print(f" folder:{folderPath}")
 
             if folderPath not in sourceFolders:
-                logging.info(f"Folder Deleted - Name: {folderPath}, size: {os.stat(folder[0]).st_size} bytes.")
+                logAndPrint(f"Folder Deleted - Name: {folderPath}, size: {os.stat(folder[0]).st_size} bytes.")
                 shutil.rmtree(folder[0], ignore_errors=True)
 
             else:
@@ -89,9 +112,11 @@ def syncFolder():
                         if os.path.join(folderPath,file) not in sourceFiles:
                             try:
                                 os.remove(os.path.join(replica,folderPath,file))
-                                logging.info(f"File Deleted - Name: {file}, size: {os.stat(replica + folderPath + file).st_size} bytes.")
+                                logAndPrint(f"File Deleted - Name: {file}, size: {os.stat(replica + folderPath + file).st_size} bytes.")
                             except:
-                                print("Error while deleting file: ", os.path.join(replica,folderPath,file))
+                                exception = "Error while deleting file: " + os.path.join(replica,folderPath,file)
+                                print(exception)
+                                logging.warning(exception)
 
                         else:
                             replicaFiles.append(os.path.join(folderPath,file))

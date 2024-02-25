@@ -10,7 +10,7 @@ replica = sys.argv[2]
 timer=float(sys.argv[3])
 log=sys.argv[4]
 run = True
-logging.basicConfig(filename=log, encoding='utf-8', format='%(asctime)s | %(levelname)s | %(module)s | %(message)s', datefmt='%Y-%m-%d %H:%M', level=logging.DEBUG)
+logging.basicConfig(filename=log, encoding='utf-8', format='%(asctime)s | %(levelname)s | %(module)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
 #start-functions#
 
